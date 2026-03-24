@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Medicinal Chemistry VR - Enhanced</title>
+
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.3.2/dist/aframe-environment-component.min.js"></script>
+
+    <script>
+      AFRAME.registerComponent('receptor-interaction', {
+        init: function () {
+          this.el.addEventListener('mouseenter', () => {
+            this.el.setAttribute('scale', '0.08 0.08 0.08');
+          });
+
+          this.el.addEventListener('mouseleave', () => {
+            this.el.setAttribute('scale', '0.06 0.06 0.06');
+          });
+
+          this.el.addEventListener('click', () => {
+            this.el.setAttribute('animation__pulse', {
+              property: 'scale',
+              to: '0.1 0.1 0.1',
+              dur: 200,
+              dir: 'alternate',
+              loop: 2
+            });
+          });
+        }
+      });
+
+      AFRAME.registerComponent('highlight-dock', {
+        init: function () {
+          this.el.addEventListener('animationcomplete', () => {
+            this.el.setAttribute('material', 'emissive: yellow; emissiveIntensity: 0.6');
+            setTimeout(() => {
+              this.el.setAttribute('material', 'emissiveIntensity: 0');
+            }, 1000);
+          });
+        }
+      });
+    </script>
+
+  </head>
+
+  <body>
+    <a-scene renderer="antialias: true; colorManagement: true">
+
+      <a-assets>
+        <a-asset-item id="muscarinic" src="4DAJ.glb"></a-asset-item>
+        <a-asset-item id="nicotinic" src="1UW6.glb"></a-asset-item>
+        <a-asset-item id="ach" src="acetylcholine.glb"></a-asset-item>
+      </a-assets>
+
+      <!-- Environment -->
+      <a-entity environment="preset: starry; ground: flat; groundColor: #050505; grid: dots"></a-entity>
+
+      <!-- Lights -->
+      <a-light type="ambient" intensity="0.6"></a-light>
+      <a-light type="point" intensity="1.2" position="2 4 4"></a-light>
+
+      <!-- 🔵 Nicotinic Receptor -->
+      <a-entity position="-4 1.5 -8">
+        <a-entity gltf-model="#nicotinic" 
+                  scale="0.06 0.06 0.06"
+                  receptor-interaction>
+        </a-entity>
+
+        <a-text value="Nicotinic Receptor\n(Ion Channel - FAST)" 
+                position="0 -3 0" align="center" width="5" color="#4CC3D9">
+        </a-text>
+
+        <!-- Ion Flow (Na+ / K+) -->
+        <a-entity>
+          <a-sphere radius="0.06" color="#00FF00" position="0 3 0"
+            animation="property: position; to: 0 -3 0; dur: 1200; loop: true; easing: linear">
+          </a-sphere>
+
+          <a-sphere radius="0.06" color="#00FF00" position="0.2 4 -0.2"
+            animation="property: position; to: 0.2 -2 0.2; dur: 1500; loop: true; easing: linear">
+          </a-sphere>
+        </a-entity>
+      </a-entity>
+
+      <!-- 🔴 Muscarinic Receptor -->
+      <a-entity position="4 1.5 -8">
+        <a-entity gltf-model="#muscarinic" 
+                  scale="0.06 0.06 0.06"
+                  receptor-interaction>
+        </a-entity>
+
+        <a-text value="Muscarinic Receptor\n(GPCR - SLOW)" 
+                position="0 -3 0" align="center" width="5" color="#EF2D5E">
+        </a-text>
+
+        <!-- Signal Wave -->
+        <a-ring radius-inner="0.5" radius-outer="0.55" color="#FF00FF" position="0 0 0"
+          animation="property: scale; from: 0.1 0.1 0.1; to: 3 3 3; dur: 2000; loop: true"
+          animation__fade="property: material.opacity; from: 1; to: 0; dur: 2000; loop: true">
+        </a-ring>
+      </a-entity>
+
+      <!-- 🧪 Acetylcholine -->
+      <a-entity position="0 1.5 -4">
+        <a-entity gltf-model="#ach"
+                  scale="0.25 0.25 0.25"
+                  highlight-dock
+                  animation="property: position;
+                             values: 0 0 0; -4 0 -4; -4 0 -4; 0 0 0; 4 0 -4; 4 0 -4; 0 0 0;
+                             dur: 14000;
+                             easing: easeInOutQuad;
+                             loop: true">
+
+          <a-text value="Acetylcholine (ACh)"
+                  position="0 0.6 0"
+                  align="center"
+                  width="3"
+                  color="white">
+          </a-text>
+
+          <a-text value="DOCKED"
+                  position="0 1 0"
+                  align="center"
+                  width="3"
+                  color="#FFFF00"
+                  animation="property: opacity; values: 0;1;1;0;0;1;1;0; dur: 14000; loop: true">
+          </a-text>
+
+        </a-entity>
+      </a-entity>
+
+      <!-- Camera -->
+      <a-camera position="0 1.6 0">
+        <a-cursor color="#2E8B57"></a-cursor>
+      </a-camera>
+
+    </a-scene>
+  </body>
+</html>
